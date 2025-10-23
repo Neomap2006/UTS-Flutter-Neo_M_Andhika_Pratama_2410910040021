@@ -5,6 +5,16 @@ class MyWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: Row(
+        children: [
+          Image.asset(
+            "Gambar/Logo.png",
+            width: 50,
+            height: 100,
+          ),
+        ],
+      ),
+    );
   }
 }
