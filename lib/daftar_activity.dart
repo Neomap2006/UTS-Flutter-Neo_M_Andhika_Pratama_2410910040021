@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uts_neo/login_activity.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -18,6 +19,52 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _konfirmasiPasswordController =
       TextEditingController();
 
+  void _showMessage(String message, {bool success = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: success ? Colors.green : Colors.redAccent,
+      ),
+    );
+  }
+
+  void _register() {
+    String nama = _namaController.text.trim();
+    String alamat = _alamatController.text.trim();
+    String username = _usernameController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirm = _konfirmasiPasswordController.text.trim();
+
+    // Validasi input
+    if (nama.isEmpty ||
+        alamat.isEmpty ||
+        username.isEmpty ||
+        password.isEmpty ||
+        confirm.isEmpty) {
+      _showMessage("Semua field harus diisi!");
+      return;
+    }
+
+    if (password.length < 8) {
+      _showMessage("Password minimal 8 karakter!");
+      return;
+    }
+
+    if (password != confirm) {
+      _showMessage("Konfirmasi password tidak sama!");
+      return;
+    }
+
+    // Jika validasi berhasil → tampilkan pesan & arahkan ke Login
+    _showMessage("Registrasi berhasil! Silakan login.", success: true);
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,6 +81,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     "Gambar/Logo.png",
                     width: 100,
                     height: 100,
+                    errorBuilder: (context, error, stackTrace) {
+                      // Antisipasi jika gambar tidak ditemukan
+                      return const Icon(Icons.store, size: 100, color: Colors.blue);
+                    },
                   ),
                   const SizedBox(height: 10),
                   const Text(
@@ -61,104 +112,34 @@ class _RegisterPageState extends State<RegisterPage> {
               style: TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 20),
-            const Text(
-              "Nama Lengkap",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            TextField(
-              controller: _namaController,
-              decoration: InputDecoration(
-                hintText: "Nama Lengkap",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
+            _buildTextField("Nama Lengkap", _namaController),
             const SizedBox(height: 15),
-            const Text(
-              "Alamat",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            TextField(
-              controller: _alamatController,
-              decoration: InputDecoration(
-                hintText: "Alamat",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
+            _buildTextField("Alamat", _alamatController),
             const SizedBox(height: 15),
-            const Text(
-              "Username",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(
-                hintText: "username",
-                prefixIcon: const Icon(Icons.person),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
+            _buildTextField("Username", _usernameController,
+                icon: Icons.person),
             const SizedBox(height: 15),
-            const Text(
-              "Password*",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            TextField(
+            _buildPasswordField(
+              label: "Password*",
               controller: _passwordController,
-              obscureText: !_showPassword,
-              decoration: InputDecoration(
-                hintText: "Min. 8 characters",
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _showPassword ? Icons.visibility : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _showPassword = !_showPassword;
-                    });
-                  },
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+              showPassword: _showPassword,
+              onToggle: () => setState(() {
+                _showPassword = !_showPassword;
+              }),
             ),
             const SizedBox(height: 15),
-            const Text(
-              "Konfirmasi Password*",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-            ),
-            TextField(
+            _buildPasswordField(
+              label: "Konfirmasi Password*",
               controller: _konfirmasiPasswordController,
-              obscureText: !_showConfirmPassword,
-              decoration: InputDecoration(
-                hintText: "Min. 8 characters",
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _showConfirmPassword
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _showConfirmPassword = !_showConfirmPassword;
-                    });
-                  },
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
+              showPassword: _showConfirmPassword,
+              onToggle: () => setState(() {
+                _showConfirmPassword = !_showConfirmPassword;
+              }),
             ),
             const SizedBox(height: 30),
             Center(
               child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.8, // 80% dari lebar layar
+                width: MediaQuery.of(context).size.width * 0.8,
                 height: 55,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -167,12 +148,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  onPressed: () {
-                    print(_namaController.text);
-                    print(_alamatController.text);
-                    print(_usernameController.text);
-                    print(_passwordController.text);
-                  },
+                  onPressed: _register,
                   child: const Text(
                     "Daftar",
                     style: TextStyle(
@@ -188,7 +164,10 @@ class _RegisterPageState extends State<RegisterPage> {
             Center(
               child: GestureDetector(
                 onTap: () {
-                  print("Pindah ke halaman login");
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
                 },
                 child: const Text.rich(
                   TextSpan(
@@ -210,6 +189,56 @@ class _RegisterPageState extends State<RegisterPage> {
           ],
         ),
       ),
+    );
+  }
+  Widget _buildTextField(String label, TextEditingController controller,
+      {IconData? icon}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style:
+                const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: label,
+            prefixIcon: icon != null ? Icon(icon) : null,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  Widget _buildPasswordField({
+    required String label,
+    required TextEditingController controller,
+    required bool showPassword,
+    required VoidCallback onToggle,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style:
+                const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+        TextField(
+          controller: controller,
+          obscureText: !showPassword,
+          decoration: InputDecoration(
+            hintText: "Min. 8 characters",
+            suffixIcon: IconButton(
+              icon: Icon(showPassword ? Icons.visibility : Icons.visibility_off),
+              onPressed: onToggle,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

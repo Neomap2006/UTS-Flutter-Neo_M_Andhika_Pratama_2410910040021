@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uts_neo/daftar_activity.dart';
-// import 'package:uts_neo/login_activity.dart';
+// import 'package:uts_neo/daftar_activity.dart';
+import 'package:uts_neo/login_activity.dart';
 // import 'package:uts_neo/menu_activity.dart';
 
 void main(List<String> args) {
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: "UTS NEO M Andhika Pratama",
-      home: RegisterPage(),
+      home: LoginPage(),
     );
   }
 }
