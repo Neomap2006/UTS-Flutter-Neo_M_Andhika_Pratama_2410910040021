@@ -25,11 +25,9 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
   void _login() {
     String username = _usernameController.text.trim();
     String password = _passwordController.text.trim();
-
     if (username.isEmpty || password.isEmpty) {
       _showMessage("Username dan Password tidak boleh kosong!");
     } else if (password.length < 8) {
@@ -92,8 +90,6 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
-
-                // Username Field
                 const Text(
                   "Username",
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -109,8 +105,6 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(height: 15),
-
-                // Password Field
                 const Text(
                   "Password*",
                   style: TextStyle(fontWeight: FontWeight.bold),
